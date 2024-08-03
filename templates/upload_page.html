@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title_tag %}
+    Upload Image
+{% endblock %}
+
+{% block body_tag %}
+
+    <!--  Logout using POST request!  -->
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Logout.</button>
+    </form>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2>Upload your image below.</h2>
+        <label for="image">Select an image to upload:</label>
+        <input type="file" id="image" name="image" accept="image/*" required>
+        <br><br>
+        <button type="submit">Upload</button>
+    </form>
+
+{% endblock %}

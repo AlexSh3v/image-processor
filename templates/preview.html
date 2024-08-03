@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title_tag %}
+    Welcome!
+{% endblock %}
+
+{% block body_tag %}
+    <h1>Welcome to Image Processor!</h1>
+    <a class="button" href="{% url 'login' %}">GET STARTED NOW!</a>
+{% endblock %}
