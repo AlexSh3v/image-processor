@@ -12,12 +12,10 @@
         <button type="submit">Logout.</button>
     </form>
 
+    <h2>Upload your image below.</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <h2>Upload your image below.</h2>
-        <label for="image">Select an image to upload:</label>
-        <input type="file" id="image" name="image" accept="image/*" required>
-        <br><br>
+        {{ form.as_p }}
         <button type="submit">Upload</button>
     </form>
 

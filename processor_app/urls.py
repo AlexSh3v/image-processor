@@ -7,5 +7,5 @@ from processor_app import views
 urlpatterns = [
     path('preview/', views.PreviewPage.as_view(), name='preview'),
     path('upload/', views.UploadPage.as_view(), name='upload'),
+    path('images/', views.images_view, name='images'),
 ]
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,19 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.image-item {
+    flex: 1 1 calc(33.333% - 10px); /* 3 images per row */
+    box-sizing: border-box;
+}
+.image-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}

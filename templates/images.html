@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title_tag %}
+    My Images
+{% endblock %}
+
+{% block head_tag %}
+    <link href="{% static 'css/images_styles.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body_tag %}
+    <div class="container">
+        <h1>My Images</h1>
+        <div class="gallery">
+            {% for image in images %}
+                <div class="image-item">
+                    <img src="/media/{{ image.original.name }}" alt="{{ image.alt_text }}" />
+                </div>
+            {% empty %}
+                <p>No images. Create?</p>
+                <!--  todo: button, block!     -->
+                <a class="button" href="{% url 'upload' %}">CREATE!</a>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
