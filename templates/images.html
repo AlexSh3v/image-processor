@@ -10,17 +10,30 @@
 {% endblock %}
 
 {% block body_tag %}
+    {% if images|length > 0 %}
+        <a class="button" href="{% url 'upload' %}">+ Upload Image</a>
+    {% else %}
+        <p>No images. Create?</p>
+        <!--  TODO: button, block!     -->
+        <a class="button" href="{% url 'upload' %}">CREATE!</a>
+    {% endif %}
     <div class="container">
         <h1>My Images</h1>
         <div class="gallery">
             {% for image in images %}
                 <div class="image-item">
-                    <img src="/media/{{ image.original.name }}" alt="{{ image.alt_text }}" />
+
+                    {% comment %} TODO: Any better link solution? {% endcomment %}
+                    <img src="{{ image.original.url }}" alt="{{ image.original.name }}" />
+
+                    <div class="image-actions">
+                        <a class="button" href="{% url 'edit' image.pk %}">Edit</a>
+                        <form action="{% url 'delete' image.pk %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="button">Delete</button>
+                        </form>
+                    </div>
                 </div>
-            {% empty %}
-                <p>No images. Create?</p>
-                <!--  todo: button, block!     -->
-                <a class="button" href="{% url 'upload' %}">CREATE!</a>
             {% endfor %}
         </div>
     </div>

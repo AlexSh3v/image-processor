@@ -17,6 +17,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+IMAGE_SIZE_IN_MEGABYTES = 10
+DATA_UPLOAD_MAX_MEMORY_SIZE = IMAGE_SIZE_IN_MEGABYTES * 1024 * 1024
 
 LOGIN_REDIRECT_URL = 'upload'  # todo: redirect to `/images`
 LOGOUT_REDIRECT_URL = 'preview'
