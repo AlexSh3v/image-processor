@@ -8,6 +8,9 @@ from django.http import HttpRequest, Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import View, UpdateView, DeleteView, ListView
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+from image_processor.settings import MEDIA_ROOT
 
 from processor_app.forms import UploadImageForm, EditImageForm
 from processor_app.models import Image
@@ -71,17 +74,29 @@ class ImageEditView(LoginRequiredMixin, UpdateView):
         return obj
 
     def form_valid(self, form):
+        print('form is valid!!!')
         crop_x = self.request.POST.get('crop_x')
         crop_y = self.request.POST.get('crop_y')
         crop_width = self.request.POST.get('crop_width')
         crop_height = self.request.POST.get('crop_height')
+        print('VALUES!:', crop_x, crop_y, crop_width, crop_height)
 
-        img = self.object
-        print(img)
+        img: Image = self.object
+        original_path = MEDIA_ROOT / img.original.path
 
-        # processed = proccesor.crop(crop_x, crop_y, crop_width, crop_height)
-        # image_obj.update(...)  # update field: `processed = models.ImageField(upload_to='processed/', null=True, blank=True)``
+        #################################################
+        # with original_path.open('rb') as origin:
+        #     copied = MEDIA_ROOT / 'copied.png'
+        #     with copied.open('wb') as cp:
+        #         cp.write(origin.read())
+        #################################################
 
+        processed_image_content = proccesor.crop(original_path, crop_x, crop_y, crop_width, crop_height)
+        file_name = f'processed/{img.id}_processed.png'
+        path_to_file = default_storage.save(file_name, processed_image_content)
+
+        img.processed = path_to_file
+        img.save()
 
         messages.success(self.request, 'Image updated successfully!')
         return super().form_valid(form)

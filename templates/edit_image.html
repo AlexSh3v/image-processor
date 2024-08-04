@@ -40,10 +40,11 @@
             <button type="button" id="crop-button" class="button">Crop Image</button>
         </div>
 
-        <input type="hidden" name="crop_x" id="crop_x">
+        {% comment %} <input type="hidden" name="crop_x" id="crop_x">
         <input type="hidden" name="crop_y" id="crop_y">
         <input type="hidden" name="crop_width" id="crop_width">
-        <input type="hidden" name="crop_height" id="crop_height">
+        <input type="hidden" name="crop_height" id="crop_height"> {% endcomment %}
+        {{ form }}
 
         {% comment %} 
         <input type="hidden" name="original" accept="image/*" required="" id="id_original"> 
@@ -75,10 +76,11 @@
         cropButton.addEventListener('click', function() {
             const canvas = cropper.getCroppedCanvas();
             const data = cropper.getData(); // Получаем данные обрезки
-            document.getElementById('crop_x').value = Math.round(data.x); // Сохраняем координату X
-            document.getElementById('crop_y').value = Math.round(data.y); // Сохраняем координату Y
-            document.getElementById('crop_width').value = Math.round(data.width); // Сохраняем ширину
-            document.getElementById('crop_height').value = Math.round(data.height); // Сохраняем высоту
+            console.log(data.x + ' ' + data.y);
+            document.getElementById('id_crop_x').value = Math.round(data.x); // Сохраняем координату X
+            document.getElementById('id_crop_y').value = Math.round(data.y); // Сохраняем координату Y
+            document.getElementById('id_crop_width').value = Math.round(data.width); // Сохраняем ширину
+            document.getElementById('id_crop_height').value = Math.round(data.height); // Сохраняем высоту
             // croppedImageInput.value = canvas.toDataURL('image/png');
             // Optionally, you can display the cropped image
             // canvas.toBlob((blob) => {

@@ -8,7 +8,10 @@ class UploadImageForm(forms.ModelForm):
         fields = ['original']
 
     
-class EditImageForm(forms.Form):
+class EditImageForm(forms.ModelForm):
+    class Meta:
+        model = Image
+        fields = ['id']
     crop_x = forms.IntegerField(widget=forms.HiddenInput(), required=False)
     crop_y = forms.IntegerField(widget=forms.HiddenInput(), required=False)
     crop_width = forms.IntegerField(widget=forms.HiddenInput(), required=False)
