@@ -14,25 +14,28 @@
         <a class="button" href="{% url 'upload' %}">+ Upload Image</a>
     {% else %}
         <p>No images. Create?</p>
-        <!--  TODO: button, block!     -->
         <a class="button" href="{% url 'upload' %}">CREATE!</a>
     {% endif %}
     <div class="container">
         <h1>My Images</h1>
         <div class="gallery">
-            {% for image in images %}
-                <div class="image-item">
-
-                    {% comment %} TODO: Any better link solution? {% endcomment %}
-                    <img src="{{ image.original.url }}" alt="{{ image.original.name }}" />
-
+            {% for image, processed_list in images_grouped.items %}
+                <div class="image-display">
+                    <div class="main-image">
+                        <img src="{{ image.original.url }}" alt="{{ image.original.name }}" />
+                    </div>
+                    <div class="processed-images">
+                        {% for processed_object in processed_list %}
+                            <img src="{{ processed_object.processed.url }}" alt="Processed {{ processed_object.processed.name }}" />
+                        {% empty %}
+                            <div class="placeholder">
+                                <p>No processed image. Edit it!</p>
+                            </div>
+                        {% endfor %}
+                    </div>
                     <div class="image-actions">
                         <a class="button" href="{% url 'edit' image.pk %}">Edit</a>
                         <a class="button" href="{% url 'image-delete' image.pk %}">Delete</a>
-                        {% comment %} <form action="{% url 'delete' image.pk %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="button">Delete</button>
-                        </form> {% endcomment %}
                     </div>
                 </div>
             {% endfor %}

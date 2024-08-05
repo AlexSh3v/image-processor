@@ -1,4 +1,4 @@
-import textwrap
+from typing import Any
 import uuid
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -13,6 +13,7 @@ from django.views.generic import View, UpdateView, DeleteView, ListView
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from image_processor.settings import MEDIA_ROOT
+from django.forms.models import model_to_dict
 
 from processor_app.forms import UploadImageForm, EditImageForm
 from processor_app.models import Image, ProcessedImage
@@ -125,6 +126,18 @@ class ImagesList(LoginRequiredMixin, ListView):
     model = Image
     template_name = 'images.html'
     context_object_name = 'images'
+    
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        d: dict[Image, list[str]] = {}
+        for image_obj in context[self.context_object_name]:
+            processed_objects = ProcessedImage.objects.filter(original=image_obj.id)
+            d[image_obj] = []
+            for processed_obj in processed_objects:
+                d[image_obj].append(processed_obj)
+        context["images_grouped"] = d
+        print(f'[context] {context["images_grouped"]}')
+        return context
     
     def get_queryset(self) -> QuerySet:
         return Image.objects.filter(uploader=self.request.user)
