@@ -60,6 +60,7 @@ class ImageEditView(LoginRequiredMixin, UpdateView):
         return obj
 
     def form_valid(self, form):
+        filter_type = self.request.POST.get('filter_type')
         crop_x = self.request.POST.get('crop_x')
         crop_y = self.request.POST.get('crop_y')
         crop_width = self.request.POST.get('crop_width')
@@ -68,6 +69,14 @@ class ImageEditView(LoginRequiredMixin, UpdateView):
         img_obj: Image = self.object
         original_path = MEDIA_ROOT / img_obj.original.path
         processed_image_content = proccesor.crop(original_path, crop_x, crop_y, crop_width, crop_height)
+
+        if filter_type not in proccesor.available_types:
+            # TODO: show error message, that filter is undefined!
+            print(f'[ImageEdit] filter is UNDEFINED: {filter_type!r}')
+            ...
+        elif filter_type != 'none':
+            print(f'[ImageEdit] setting new filter: {filter_type!r}')
+            processed_image_content = proccesor.filter_(processed_image_content, filter_type)
 
         # file_name = f'processed/{img_obj.id}_processed.png'
         # path_to_file = default_storage.save(file_name, processed_image_content)

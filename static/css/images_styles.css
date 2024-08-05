@@ -38,3 +38,26 @@
     border-radius: 8px;
     background-color: #f9f9f9;
 }
+
+.cropper-canvas {
+    filter: brightness(75%);
+}
+
+.grayscale {
+    filter: grayscale(100%);
+}
+.sepia {
+    filter: sepia(100%);
+}
+.blur {
+    filter: blur(5px);
+}
+.invert {
+    filter: invert(100%);
+}
+
+.current-editing-image {
+    width: 40%; 
+    max-width: 500px;
+    height: auto;
+}

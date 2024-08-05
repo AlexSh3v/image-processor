@@ -1,7 +1,35 @@
+import enum
 import io
 import pathlib
-from PIL import Image, ExifTags
+from typing import Literal, Union
+from PIL import Image, ExifTags, ImageFilter, ImageOps
+from PIL.ImageFile import ImageFile
+import numpy as np
 from django.core.files.base import ContentFile
+
+
+available_types = [
+    'none', 
+    'sepia', 
+    'greyscale', 
+    'invert', 
+    'blur',
+]
+FilterType = Literal[*available_types]
+
+def apply_sepia(img: Image):
+    img = img.convert('RGBA')
+    data = np.array(img)
+    sepia_data = np.zeros(data.shape, dtype=np.uint8)
+    tr = (0.393 * data[:, :, 0] + 0.769 * data[:, :, 1] + 0.189 * data[:, :, 2]).clip(0, 255)
+    tg = (0.349 * data[:, :, 0] + 0.686 * data[:, :, 1] + 0.168 * data[:, :, 2]).clip(0, 255)
+    tb = (0.272 * data[:, :, 0] + 0.534 * data[:, :, 1] + 0.131 * data[:, :, 2]).clip(0, 255)
+    sepia_data[:, :, 0] = tr
+    sepia_data[:, :, 1] = tg
+    sepia_data[:, :, 2] = tb
+    sepia_data[:, :, 3] = data[:, :, 3]
+    sepia_img = Image.fromarray(sepia_data, 'RGBA')
+    return sepia_img
 
 
 def crop(original_image: pathlib.Path, 
@@ -53,3 +81,54 @@ def crop(original_image: pathlib.Path,
     buffer.seek(0)
 
     return ContentFile(buffer.read(), name='processed_image.png')
+
+
+def filter_(value: pathlib.Path | ImageFile | ContentFile, filter_type: FilterType):
+    if isinstance(value, pathlib.Path):
+        img = Image.open(value)
+    elif isinstance(value, ContentFile):
+        raw_data = value.read()
+        buffer = io.BytesIO(raw_data)
+        img = Image.open(buffer)
+    elif isinstance(value, ImageFile):
+        img = value
+
+    if filter_type == 'none':
+        pass
+    elif filter_type == 'grayscale':
+        img = img.convert('L')
+    elif filter_type == 'sepia':
+        img = apply_sepia(img)
+    elif filter_type == 'blur':
+        img = img.filter(ImageFilter.BLUR)
+    elif filter_type == 'invert':
+        if img.mode not in ('L', 'RGB'):
+            img = img.convert('RGB')
+        img = ImageOps.invert(img)
+    else:
+        raise ValueError(f"Unknown filter type. Use one of these: {FilterType}.")
+
+    ###########################
+    # return img.show()
+    ###########################
+
+    buffer = io.BytesIO()
+    img.save(buffer, format='PNG')
+    buffer.seek(0)
+
+    return ContentFile(buffer.read(), name='processed_image.png')
+
+
+if __name__ == '__main__':
+    filters = [
+        'none',
+        'grayscale',
+        'sepia',
+        'invert',
+        'blur',
+    ]
+    print(FilterType)
+    p = pathlib.Path(r'C:\Users\Alex & Vadimka\Documents\projects\image-processor\media\uploads\Mad_Duck.png')
+    print(p.name)
+    for f in filters:
+        print(f, filter_(p, f))
