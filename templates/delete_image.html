@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title_tag %}
+    Delete Image
+{% endblock %}
+
+{% block head_tag %}
+    <link href="{% static 'css/images_styles.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body_tag %}
+    <h1>Delete Image</h1>
+    {% comment %} <form action="{% url 'delete' image.pk %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="button">Delete</button>
+    </form>  {% endcomment %}
+    <form method="POST">
+        {% csrf_token %}
+        <img src="{{ image.original.url }}" alt="{{ image.original.name }}" style="width: 24%; height: auto;"/>
+        <p>
+            Are you sure you want to delete "{{ image.original.name }}"? 
+            <span style="color: red;">
+                THIS IS TOTALY A DESTRUCTIVE ACTION!
+            </span>
+        </p>
+        <input type="submit" value="Confirm" />
+    </form>
+{% endblock %}
+

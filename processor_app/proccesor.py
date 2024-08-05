@@ -2,7 +2,6 @@ import io
 import pathlib
 from PIL import Image, ExifTags
 from django.core.files.base import ContentFile
-from image_processor.settings import MEDIA_ROOT
 
 
 def crop(original_image: pathlib.Path, 
@@ -41,8 +40,6 @@ def crop(original_image: pathlib.Path,
         print('Error!')
         pass
 
-    image.save(MEDIA_ROOT / 'test.png')
-    
     crop_x = int(crop_x)
     crop_y = int(crop_y)
     crop_width = int(crop_width)
@@ -54,7 +51,5 @@ def crop(original_image: pathlib.Path,
     # TODO: get FORMAT png/jpeg/gif data also!
     cropped_image.save(buffer, format='png')
     buffer.seek(0)
-
-    cropped_image.save(MEDIA_ROOT / 'test-cropped.png')
 
     return ContentFile(buffer.read(), name='processed_image.png')

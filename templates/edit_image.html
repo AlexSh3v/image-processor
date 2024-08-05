@@ -9,6 +9,7 @@
     <link href="{% static 'css/images_styles.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="{% static 'js/my_cropper.js' %}"></script>
     <style>
         .img-container {
             max-width: 100%;
@@ -36,26 +37,14 @@
                 <option value="invert">Invert</option>
             </select>
         </div>
-        <div>
-            <button type="button" id="crop-button" class="button">Crop Image</button>
-        </div>
-
-        {% comment %} <input type="hidden" name="crop_x" id="crop_x">
-        <input type="hidden" name="crop_y" id="crop_y">
-        <input type="hidden" name="crop_width" id="crop_width">
-        <input type="hidden" name="crop_height" id="crop_height"> {% endcomment %}
         {{ form }}
-
-        {% comment %} 
-        <input type="hidden" name="original" accept="image/*" required="" id="id_original"> 
-        {% endcomment %}
-        <button type="submit" class="button">Save Changes</button>
+        <button type="submit" id="save-changes" class="button">Save Changes</button>
     </form>
     <a class="button" href="{% url 'images' %}">Cancel</a>
 
-    <script>
+    {% comment %} <script>
         const image = document.getElementById('image');
-        const cropButton = document.getElementById('crop-button');
+        const saveChangesButton = document.getElementById('save-changes');
         const croppedImageInput = document.getElementById('cropped_image');
         const filterSelect = document.getElementById('filter');
 
@@ -67,28 +56,19 @@
                 viewMode: 1,
                 autoCropArea: 1,
                 responsive: true,
-                crop(event) {
-                    
-                },
+                crop(event) { },
             });
         };
 
-        cropButton.addEventListener('click', function() {
+        saveChangesButton.addEventListener('click', function() {
             const canvas = cropper.getCroppedCanvas();
-            const data = cropper.getData(); // Получаем данные обрезки
-            console.log(data.x + ' ' + data.y);
-            document.getElementById('id_crop_x').value = Math.round(data.x); // Сохраняем координату X
-            document.getElementById('id_crop_y').value = Math.round(data.y); // Сохраняем координату Y
-            document.getElementById('id_crop_width').value = Math.round(data.width); // Сохраняем ширину
-            document.getElementById('id_crop_height').value = Math.round(data.height); // Сохраняем высоту
-            // croppedImageInput.value = canvas.toDataURL('image/png');
-            // Optionally, you can display the cropped image
-            // canvas.toBlob((blob) => {
-            //     const url = URL.createObjectURL(blob);
-            //     // Display the cropped image or upload it
-            // });
+            const data = cropper.getData();
+            document.getElementById('id_crop_x').value = Math.round(data.x); 
+            document.getElementById('id_crop_y').value = Math.round(data.y);
+            document.getElementById('id_crop_width').value = Math.round(data.width);
+            document.getElementById('id_crop_height').value = Math.round(data.height);
         });
 
-    </script>
+    </script> {% endcomment %}
 {% endblock %}
 

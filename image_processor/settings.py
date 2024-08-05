@@ -20,7 +20,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 IMAGE_SIZE_IN_MEGABYTES = 10
 DATA_UPLOAD_MAX_MEMORY_SIZE = IMAGE_SIZE_IN_MEGABYTES * 1024 * 1024
 
-LOGIN_REDIRECT_URL = 'upload'  # todo: redirect to `/images`
+LOGIN_REDIRECT_URL = 'images'
 LOGOUT_REDIRECT_URL = 'preview'
 
 # Quick-start development settings - unsuitable for production
@@ -133,3 +133,5 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# TODO: implement logger inside django.
