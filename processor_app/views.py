@@ -9,7 +9,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpRequest, Http404
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import View, UpdateView, DeleteView, ListView
+from django.views.generic import View, UpdateView, DeleteView, ListView, DetailView
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from image_processor.settings import MEDIA_ROOT
@@ -177,3 +177,8 @@ class BaseUrlRedirection(View):
             return redirect('images')
         return redirect('login')
         
+
+class ImageSingle(LoginRequiredMixin, DetailView):
+    model = Images
+    template_name = 'image_single.html'
+    context_object_name = 'image'

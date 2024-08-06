@@ -22,7 +22,9 @@
             {% for image, processed_list in images_grouped.items %}
                 <div class="image-display">
                     <div class="main-image">
-                        <img src="{{ image.source.url }}" alt="{{ image.source.name }}" />
+                        <a href="{% url 'image-single' image.pk %}">
+                            <img src="{{ image.source.url }}" alt="{{ image.source.name }}"  />
+                        </a>
                     </div>
                     <div class="processed-images">
                         {% for processed_object in processed_list %}
@@ -34,8 +36,11 @@
                         {% endfor %}
                     </div>
                     <div class="image-actions">
+                        {% comment %}
                         <a class="button" href="{% url 'edit' image.pk %}">Edit</a>
                         <a class="button" href="{% url 'image-delete' image.pk %}">Delete</a>
+                        {% endcomment %}
+                        <a class="button" href="{% url 'image-single' image.pk %}"></a>
                     </div>
                 </div>
             {% endfor %}
