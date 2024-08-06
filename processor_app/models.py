@@ -1,9 +1,16 @@
+import uuid
 from django.db import models
 
 
-class Image(models.Model):
-    original = models.ImageField(upload_to='uploads/')
-    processed = models.ImageField(upload_to='processed/', null=True, blank=True)
+class Images(models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        # FIXME: turn to False!
+        editable=True,
+    )
+    source = models.ImageField(upload_to='uploads/')
+    original_id = models.UUIDField(null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(auto_now=True)
     uploader = models.ForeignKey(
@@ -12,4 +19,5 @@ class Image(models.Model):
     )
 
     def __str__(self):
-        return f'Image(id={self.pk}; at={self.original.name!r})'
+        return f'Image(id={self.pk}; name={self.source.name!r})'
+

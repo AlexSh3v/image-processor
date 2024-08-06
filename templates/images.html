@@ -10,17 +10,39 @@
 {% endblock %}
 
 {% block body_tag %}
+    {% if images|length > 0 %}
+        <a class="button" href="{% url 'upload' %}">+ Upload Image</a>
+    {% else %}
+        <p>No images. Create?</p>
+        <a class="button" href="{% url 'upload' %}">CREATE!</a>
+    {% endif %}
     <div class="container">
         <h1>My Images</h1>
         <div class="gallery">
-            {% for image in images %}
-                <div class="image-item">
-                    <img src="/media/{{ image.original.name }}" alt="{{ image.alt_text }}" />
+            {% for image, processed_list in images_grouped.items %}
+                <div class="image-display">
+                    <div class="main-image">
+                        <a href="{% url 'image-single' image.pk %}">
+                            <img src="{{ image.source.url }}" alt="{{ image.source.name }}"  />
+                        </a>
+                    </div>
+                    <div class="processed-images">
+                        {% for processed_object in processed_list %}
+                            <img src="{{ processed_object.source.url }}" alt="Processed {{ processed_object.source.name }}" />
+                        {% empty %}
+                            <div class="placeholder">
+                                <p>No processed image. Edit it!</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="image-actions">
+                        {% comment %}
+                        <a class="button" href="{% url 'edit' image.pk %}">Edit</a>
+                        <a class="button" href="{% url 'image-delete' image.pk %}">Delete</a>
+                        {% endcomment %}
+                        <a class="button" href="{% url 'image-single' image.pk %}"></a>
+                    </div>
                 </div>
-            {% empty %}
-                <p>No images. Create?</p>
-                <!--  todo: button, block!     -->
-                <a class="button" href="{% url 'upload' %}">CREATE!</a>
             {% endfor %}
         </div>
     </div>

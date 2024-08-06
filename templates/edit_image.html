@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title_tag %}
+    Edit Image
+{% endblock %}
+
+{% block head_tag %}
+    <link href="{% static 'css/images_styles.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="{% static 'js/my_cropper.js' %}"></script>
+    <style>
+        .img-container {
+            max-width: 100%;
+            margin: auto;
+        }
+        img {
+            max-width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block body_tag %}
+    <h1>Edit Image</h1>
+    <form method="post" enctype="multipart/form-data" id="edit-form">
+        {% csrf_token %}
+        <div class="img-container">
+            <img id="image" class="current-editing-image" src="/media/{{ object.source.name }}" alt="Image to edit" />
+        </div>
+        <div>
+            <label for="filter">Choose a filter:</label>
+            <select id="filter" name="filter">
+                <option value="none" selected>None</option>
+                <option value="grayscale">Grayscale</option>
+                <option value="sepia">Sepia</option>
+                <option value="invert">Invert</option>
+                {% comment %} <option value="blur">Blur</option> {% endcomment %}
+            </select>
+        </div>
+        {{ form }}
+        <button type="submit" id="save-changes" class="button">Save Changes</button>
+    </form>
+    <a class="button" href="{% url 'images' %}">Cancel</a>
+{% endblock %}
+
