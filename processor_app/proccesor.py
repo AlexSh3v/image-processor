@@ -11,7 +11,7 @@ from django.core.files.base import ContentFile
 available_types = [
     'none', 
     'sepia', 
-    'greyscale', 
+    'grayscale', 
     'invert', 
     'blur',
 ]
@@ -109,10 +109,11 @@ def filter_(value: pathlib.Path | ImageFile | ContentFile, filter_type: FilterTy
         raise ValueError(f"Unknown filter type. Use one of these: {FilterType}.")
 
     ###########################
-    # return img.show()
+    # img.show()
     ###########################
 
     buffer = io.BytesIO()
+    # FIXME: format!!!
     img.save(buffer, format='PNG')
     buffer.seek(0)
 
@@ -123,12 +124,12 @@ if __name__ == '__main__':
     filters = [
         'none',
         'grayscale',
-        'sepia',
-        'invert',
-        'blur',
+        # 'sepia',
+        # 'invert',
+        # 'blur',
     ]
     print(FilterType)
-    p = pathlib.Path(r'C:\Users\Alex & Vadimka\Documents\projects\image-processor\media\uploads\Mad_Duck.png')
+    p = pathlib.Path(r'C:\Users\Alex & Vadimka\Documents\projects\image-processor\media\uploads\processed_image.png')
     print(p.name)
     for f in filters:
         print(f, filter_(p, f))

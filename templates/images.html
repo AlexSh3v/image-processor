@@ -22,11 +22,11 @@
             {% for image, processed_list in images_grouped.items %}
                 <div class="image-display">
                     <div class="main-image">
-                        <img src="{{ image.original.url }}" alt="{{ image.original.name }}" />
+                        <img src="{{ image.source.url }}" alt="{{ image.source.name }}" />
                     </div>
                     <div class="processed-images">
                         {% for processed_object in processed_list %}
-                            <img src="{{ processed_object.processed.url }}" alt="Processed {{ processed_object.processed.name }}" />
+                            <img src="{{ processed_object.source.url }}" alt="Processed {{ processed_object.source.name }}" />
                         {% empty %}
                             <div class="placeholder">
                                 <p>No processed image. Edit it!</p>

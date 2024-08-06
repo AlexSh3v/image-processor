@@ -15,8 +15,8 @@ from django.core.files.storage import default_storage
 from image_processor.settings import MEDIA_ROOT
 from django.forms.models import model_to_dict
 
-from processor_app.forms import UploadImageForm, EditImageForm
-from processor_app.models import Image, ProcessedImage
+from processor_app.forms import UploadImageForm, EditImageForm, DeleteImageForm
+from processor_app.models import Images
 
 from processor_app import proccesor
 
@@ -45,12 +45,12 @@ class UploadPage(LoginRequiredMixin, View):
 
 
 class ImageEditView(LoginRequiredMixin, UpdateView):
-    model = Image
+    model = Images
     form_class = EditImageForm
     template_name = 'edit_image.html'
     
     def get_queryset(self):
-        q = Image.objects.filter(uploader=self.request.user)
+        q = Images.objects.filter(uploader=self.request.user)
         return q
 
     def get_object(self, _=None):
@@ -66,8 +66,9 @@ class ImageEditView(LoginRequiredMixin, UpdateView):
         crop_width = self.request.POST.get('crop_width')
         crop_height = self.request.POST.get('crop_height')
 
-        img_obj: Image = self.object
-        original_path = MEDIA_ROOT / img_obj.original.path
+        img_obj: Images = self.object
+        original_path = MEDIA_ROOT / img_obj.source.path
+        print(f'Original Image: {original_path!r}')
         processed_image_content = proccesor.crop(original_path, crop_x, crop_y, crop_width, crop_height)
 
         if filter_type not in proccesor.available_types:
@@ -83,12 +84,15 @@ class ImageEditView(LoginRequiredMixin, UpdateView):
         # img_obj.processed = path_to_file
         # img_obj.save()
 
-        processed_image = ProcessedImage(
-            original=img_obj,
-            processed=processed_image_content,
+        processed_image_obj = Images(
+            source=processed_image_content,
+            original_id=img_obj.id,
             uploader=self.request.user,
         )
-        processed_image.save()
+        # FIXME: change type based on the image!
+        processed_image_content.name = f'processed_{processed_image_obj.id}.png'
+        processed_image_obj.source = processed_image_content
+        processed_image_obj.save()
 
         messages.success(self.request, 'Image updated successfully!')
         return super().form_valid(form)
@@ -98,31 +102,45 @@ class ImageEditView(LoginRequiredMixin, UpdateView):
 
 
 class ImageDeleteView(LoginRequiredMixin, DeleteView):
-    model = Image
+    model = Images
     template_name = 'delete_image.html'
+    form_class = DeleteImageForm
     success_url = reverse_lazy('images')
+    context_object_name = 'image'
 
     def get_queryset(self):
-        return Image.objects.filter(uploader=self.request.user)
+        return Images.objects.filter(uploader=self.request.user)
 
     def get_object(self, _=None):
         query = self.get_queryset()
         pk_uuid_format = self.kwargs['pk']
         obj = query.get(pk=uuid.UUID(pk_uuid_format))
+        print(f'Object? {obj}')
         return obj
 
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        print(f'CONTEXT!! {context}')
+        return context
+    
+
     def post(self, request, *args, **kwargs):
+        print(f'POST!: {self.request.POST}')
+        delete_children_check = self.request.POST.get('is_delete_children')
         img_obj = self.get_object()
-        original_relative_path = img_obj.original.path
+        original_relative_path = img_obj.source.path
         original_full_path = MEDIA_ROOT / original_relative_path
         print(f'[delete] unlick origin: {original_full_path!r}')
         original_full_path.unlink(missing_ok=True)
-        queryset = Image.objects.filter(original=original_relative_path)
+        queryset = Images.objects.filter(source=original_relative_path)
         print(f'[delete] should be empty: {queryset}', sep='\n')
-        for it in ProcessedImage.objects.filter(original=img_obj.id):
-            processed_path = MEDIA_ROOT / it.processed.path
+        for it in Images.objects.filter(original_id=img_obj.id):
+            if not delete_children_check:
+                break
+            processed_path = MEDIA_ROOT / it.source.path
             print(f'  [delete] unlink: {processed_path!r}')
             processed_path.unlink(missing_ok=True)
+            it.delete()
         return super().post(request, *args, **kwargs)
 
 
@@ -132,15 +150,15 @@ def logout_view(request: HttpRequest):
 
 
 class ImagesList(LoginRequiredMixin, ListView):
-    model = Image
+    model = Images
     template_name = 'images.html'
     context_object_name = 'images'
     
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        d: dict[Image, list[str]] = {}
+        d: dict[Images, list[str]] = {}
         for image_obj in context[self.context_object_name]:
-            processed_objects = ProcessedImage.objects.filter(original=image_obj.id)
+            processed_objects = Images.objects.filter(original_id=image_obj.id)
             d[image_obj] = []
             for processed_obj in processed_objects:
                 d[image_obj].append(processed_obj)
@@ -149,7 +167,7 @@ class ImagesList(LoginRequiredMixin, ListView):
         return context
     
     def get_queryset(self) -> QuerySet:
-        return Image.objects.filter(uploader=self.request.user)
+        return Images.objects.filter(uploader=self.request.user)
 
 
 

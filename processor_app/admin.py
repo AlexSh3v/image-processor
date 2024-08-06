@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from .models import Image, ProcessedImage
+from .models import Images
 
 
-admin.site.register(Image)
-admin.site.register(ProcessedImage)
+admin.site.register(Images)

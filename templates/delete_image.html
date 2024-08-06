@@ -17,13 +17,19 @@
     </form>  {% endcomment %}
     <form method="POST">
         {% csrf_token %}
-        <img src="{{ image.original.url }}" alt="{{ image.original.name }}" style="width: 24%; height: auto;"/>
+        <img src="{{ image.source.url }}" alt="{{ image.source.name }}" style="width: 24%; height: auto;"/>
         <p>
-            Are you sure you want to delete "{{ image.original.name }}"? 
+            Are you sure you want to delete "{{ image.source.name }}"? 
             <span style="color: red;">
                 THIS IS TOTALY A DESTRUCTIVE ACTION!
             </span>
         </p>
+        {% comment %} <label>
+            <input type="checkbox" id="id_delete_children" />
+            Delete children also.
+        </label> {% endcomment %}
+        {% comment %} <br> {% endcomment %}
+        {{ form }}
         <input type="submit" value="Confirm" />
     </form>
 {% endblock %}
