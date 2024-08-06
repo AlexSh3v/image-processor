@@ -32,11 +32,11 @@ def apply_sepia(img: Image):
     return sepia_img
 
 
-def crop(original_image: pathlib.Path, 
+def crop(original_image: ImageFile, 
          crop_x: int, 
          crop_y: int, 
          crop_width: int, 
-         crop_height: int):
+         crop_height: int) -> ContentFile:
     """Crop image into memory. Return as ContentFile from django.
 
     Args:
@@ -49,7 +49,7 @@ def crop(original_image: pathlib.Path,
     Returns:
         ContentFile: django image
     """
-    image = Image.open(original_image)
+    image = original_image
 
     try:
         for orientation in ExifTags.TAGS.keys():
@@ -74,25 +74,10 @@ def crop(original_image: pathlib.Path,
     crop_height = int(crop_height)
 
     cropped_image = image.crop((crop_x, crop_y, crop_x + crop_width, crop_y + crop_height))
-
-    buffer = io.BytesIO()
-    # TODO: get FORMAT png/jpeg/gif data also!
-    cropped_image.save(buffer, format='png')
-    buffer.seek(0)
-
-    return ContentFile(buffer.read(), name='processed_image.png')
+    return cropped_image
 
 
-def filter_(value: pathlib.Path | ImageFile | ContentFile, filter_type: FilterType):
-    if isinstance(value, pathlib.Path):
-        img = Image.open(value)
-    elif isinstance(value, ContentFile):
-        raw_data = value.read()
-        buffer = io.BytesIO(raw_data)
-        img = Image.open(buffer)
-    elif isinstance(value, ImageFile):
-        img = value
-
+def filter_(img: ImageFile, filter_type: FilterType) -> ImageFile:
     if filter_type == 'none':
         pass
     elif filter_type == 'grayscale':
@@ -109,18 +94,35 @@ def filter_(value: pathlib.Path | ImageFile | ContentFile, filter_type: FilterTy
         raise ValueError(f"Unknown filter type. Use one of these: {FilterType}.")
 
     ###########################
-    # img.show()
+    if DEBUG:
+        img.show()
     ###########################
 
+    return img
+
+
+def get_image(by_path: pathlib.Path) -> ImageFile:
+    return Image.open(by_path)
+
+def convert_to_content_file(image_object: ImageFile, suffix: str) -> ContentFile:
+    if suffix.lower() == '.jpg':
+        suffix = '.jpeg'
+        if image_object.mode.lower() in ('rgb', 'rgba'):
+            suffix = '.png'
+    file_format = suffix.strip('.')
+    print(f'[Img2ContentFile] suffix: {suffix}')
+    print(f'[Img2ContentFile] file format: {file_format}')
     buffer = io.BytesIO()
-    # FIXME: format!!!
-    img.save(buffer, format='PNG')
+    image_object.save(buffer, format=file_format)
     buffer.seek(0)
+    unimportant_filename = f'new_image{suffix}'
+    print(f'[Img2ContentFile] new (unimportant) filename: {unimportant_filename}')
+    return ContentFile(buffer.read(), name=unimportant_filename)
 
-    return ContentFile(buffer.read(), name='processed_image.png')
 
-
+DEBUG = False
 if __name__ == '__main__':
+    DEBUG = True
     filters = [
         'none',
         'grayscale',

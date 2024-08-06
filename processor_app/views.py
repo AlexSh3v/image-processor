@@ -1,3 +1,4 @@
+import pathlib
 from typing import Any
 import uuid
 from django.contrib import messages
@@ -68,16 +69,21 @@ class ImageEditView(LoginRequiredMixin, UpdateView):
 
         img_obj: Images = self.object
         original_path = MEDIA_ROOT / img_obj.source.path
+        suffix = original_path.suffix
         print(f'Original Image: {original_path!r}')
-        processed_image_content = proccesor.crop(original_path, crop_x, crop_y, crop_width, crop_height)
 
+        image_pillow_object = proccesor.get_image(original_path)
+        image_pillow_object = proccesor.crop(image_pillow_object, crop_x, crop_y, crop_width, crop_height)
         if filter_type not in proccesor.available_types:
             # TODO: show error message, that filter is undefined!
             print(f'[ImageEdit] filter is UNDEFINED: {filter_type!r}')
-            ...
         elif filter_type != 'none':
             print(f'[ImageEdit] setting new filter: {filter_type!r}')
-            processed_image_content = proccesor.filter_(processed_image_content, filter_type)
+            image_pillow_object = proccesor.filter_(image_pillow_object, filter_type)
+
+        processed_image_content = proccesor.convert_to_content_file(
+            image_pillow_object, suffix,
+        )
 
         # file_name = f'processed/{img_obj.id}_processed.png'
         # path_to_file = default_storage.save(file_name, processed_image_content)
@@ -90,11 +96,11 @@ class ImageEditView(LoginRequiredMixin, UpdateView):
             uploader=self.request.user,
         )
         # FIXME: change type based on the image!
-        processed_image_content.name = f'processed_{processed_image_obj.id}.png'
+        processed_image_content.name = f'processed_{processed_image_obj.id}{suffix}'
         processed_image_obj.source = processed_image_content
         processed_image_obj.save()
 
-        messages.success(self.request, 'Image updated successfully!')
+        # messages.success(self.request, 'Image updated successfully!')
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -182,3 +188,10 @@ class ImageSingle(LoginRequiredMixin, DetailView):
     model = Images
     template_name = 'image_single.html'
     context_object_name = 'image'
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        file_format = pathlib.Path(context['image'].source.path).suffix
+        context['file_format'] = file_format.strip('.')
+        return context
+    

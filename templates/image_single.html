@@ -19,6 +19,7 @@
     <p>Uploaded at: {{ image.uploaded_at }}</p>
     <p>Edited at: {{ image.edited_at }}</p>
     <p>Uploader: {{ image.uploader.username }}</p>
+    <p>File format: {{ file_format }}</p>
     <a class="button" href="{% url 'edit' image.pk %}">Edit</a>
     <a class="button" href="{% url 'image-delete' image.pk %}">Delete</a>
 
