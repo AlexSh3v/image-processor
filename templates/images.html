@@ -28,12 +28,21 @@
                     </div>
                     <div class="processed-images">
                         {% for processed_object in processed_list %}
-                            <img src="{{ processed_object.source.url }}" alt="Processed {{ processed_object.source.name }}" />
+                            {% if forloop.counter <= 3 %}
+                                <a href="{% url 'image-single' processed_object.pk %}">
+                                    <img src="{{ processed_object.source.url }}" alt="Processed {{ processed_object.source.name }}" />
+                                </a>
+                            {% endif %}
                         {% empty %}
-                            <div class="placeholder">
-                                <p>No processed image. Edit it!</p>
+                            <div class="my-placeholder">
+                                <p>No edited images of this image.</p>
                             </div>
                         {% endfor %}
+                        {% if processed_list|length > 3 %}
+                        <div class="more-indicator">
+                            & more!
+                        </div>
+                    {% endif %}
                     </div>
                     <div class="image-actions">
                         {% comment %}

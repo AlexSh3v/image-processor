@@ -142,6 +142,7 @@ class ImageDeleteView(LoginRequiredMixin, DeleteView):
         print(f'[delete] should be empty: {queryset}', sep='\n')
         for it in Images.objects.filter(original_id=img_obj.id):
             if not delete_children_check:
+                it.original_id = None
                 break
             processed_path = MEDIA_ROOT / it.source.path
             print(f'  [delete] unlink: {processed_path!r}')
@@ -164,6 +165,8 @@ class ImagesList(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         d: dict[Images, list[str]] = {}
         for image_obj in context[self.context_object_name]:
+            if image_obj.original_id is not None:
+                continue
             processed_objects = Images.objects.filter(original_id=image_obj.id)
             d[image_obj] = []
             for processed_obj in processed_objects:
@@ -191,7 +194,16 @@ class ImageSingle(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        file_format = pathlib.Path(context['image'].source.path).suffix
+        this_obj = context['image']
+        file_format = pathlib.Path(this_obj.source.path).suffix
         context['file_format'] = file_format.strip('.')
+        context['processed_images'] = [
+            obj for obj in Images.objects.filter(original_id=context['image'].id)
+            if obj.id != this_obj.id
+        ]
+        print(f'[IMAGE SINGLE] this object:')
+        print(this_obj)
+        print(f'[IMAGE SINGLE] processed:')
+        print(*context["processed_images"], sep='\n')
         return context
     

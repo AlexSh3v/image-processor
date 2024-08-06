@@ -21,13 +21,13 @@
 }
 
 .processed-images img {
-    width: 50%;
+    width: 25%;
     height: auto;
     border-radius: 8px;
     gap: 10px;
 }
 
-.placeholder {
+.my-placeholder {
     display: flex;
     flex-direction: column;
     align-items: center;
