@@ -10,7 +10,6 @@
 {% endblock %}
 
 {% block body_tag %}
-    <h1>Delete Image</h1>
     {% comment %} <form action="{% url 'delete' image.pk %}" method="post" style="display:inline;">
         {% csrf_token %}
         <button type="submit" class="button">Delete</button>
@@ -21,8 +20,9 @@
         <div class="mb-3 container text-center">
             <img id="image" class="my-image img-thumbnail rounded" src="{{ image.source.url }}" alt="{{ image.source.name }}" onclick="openFullscreen();" >
         </div>
-        <div class="card">
+        <div class="card mb-5">
             <div class="card-body">
+                <p class="fs-3 mb-3">Are you sure the you want to <span style="color: red; font-weight: 900;">DELETE</span> this image?</p>
 
                 <div class="alert alert-danger dashed-border-danger" role="alert">
                     <input class="form-check-input ms-2" type="checkbox" value="" id="id_is_delete_children">
@@ -33,13 +33,13 @@
 
                 <div class="mb-3 row row-gap-1">
                     <div class="col-12">
-                        <a class="btn btn-outline-success w-100" href="{% url 'images' %}">I want to save it!</a>
+                        <a class="btn btn-outline-success w-100" href="{% url 'images' %}">No! I want to save it!</a>
                     </div>
                     <div class="col-12">
-                        <a class="btn btn-outline-success w-100" href="{% url 'images' %}">Save it!</a>
+                        <a class="btn btn-outline-success w-100" href="{% url 'images' %}">NOOO! Save it!</a>
                     </div>
                     <div class="col-12">
-                        <a class="btn btn-outline-success w-100" href="{% url 'images' %}">SAAAAAVE IT!!1!</a>
+                        <a class="btn btn-outline-success w-100" href="{% url 'images' %}">NOOOOOOOOOOOO! SAAAAAVE IT!!1!</a>
                     </div>
                     <div class="col-12">
                         <input class="btn btn-outline-danger w-100" id="confirm-deletion" type="submit" value="CONFIRM DELETION OF THIS IMAGE!" />

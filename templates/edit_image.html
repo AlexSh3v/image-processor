@@ -26,7 +26,7 @@
     <form method="post" enctype="multipart/form-data" id="edit-form">
         {% csrf_token %}
         <div class="img-container mb-3">
-            <img id="image" class="current-editing-image" src="/media/{{ object.source.name }}" alt="Image to edit" />
+            <img id="image" class="current-editing-image" src="{{ object.source.url }}" alt="Image to edit" />
         </div>
         <div class="card mb-3">
             <div class="card-body">

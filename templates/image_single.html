@@ -29,8 +29,9 @@
                 </tr>
             </tbody>
         </table>
-        <div class="mb-5 row row-cols-2 column-gap-1">
-            <a class="btn btn-outline-primary col-3" href="{% url 'edit' image.pk %}">Edit</a>
+        <div class="container mb-5 row row-cols-2 column-gap-1">
+            <a class="btn btn-outline-dark col-2" href="{{ image.source.url }}" download="{{ image.source.name }}">Download</a>
+            <a class="btn btn-outline-dark col-2" href="{% url 'edit' image.pk %}">Edit</a>
             <a class="btn btn-outline-danger col-2" href="{% url 'image-delete' image.pk %}">Delete</a>
         </div>
     </div>
