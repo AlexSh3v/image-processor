@@ -10,14 +10,14 @@
 {% endblock %}
 
 {% block body_tag %}
-    {% if images|length > 0 %}
+    {% comment %} {% if images|length > 0 %}
         <a class="button" href="{% url 'upload' %}">+ Upload Image</a>
     {% else %}
         <p>No images. Create?</p>
         <a class="button" href="{% url 'upload' %}">CREATE!</a>
-    {% endif %}
+    {% endif %} {% endcomment %}
     <div class="container">
-        <h1>My Images</h1>
+        {% comment %} <h1>My Images</h1> {% endcomment %}
         <div class="gallery">
             {% for image, processed_list in images_grouped.items %}
                 <div class="image-display">
@@ -39,7 +39,7 @@
                             </div>
                         {% endfor %}
                         {% if processed_list|length > 3 %}
-                        <div class="more-indicator">
+                        <div class="more-indicator fs-3 fw-bold">
                             & more!
                         </div>
                     {% endif %}

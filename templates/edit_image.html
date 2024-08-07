@@ -22,25 +22,29 @@
 {% endblock %}
 
 {% block body_tag %}
-    <h1>Edit Image</h1>
+    <h1 class="mb-3">Editor</h1>
     <form method="post" enctype="multipart/form-data" id="edit-form">
         {% csrf_token %}
-        <div class="img-container">
+        <div class="img-container mb-3">
             <img id="image" class="current-editing-image" src="/media/{{ object.source.name }}" alt="Image to edit" />
         </div>
-        <div>
-            <label for="filter">Choose a filter:</label>
-            <select id="filter" name="filter">
-                <option value="none" selected>None</option>
-                <option value="grayscale">Grayscale</option>
-                <option value="sepia">Sepia</option>
-                <option value="invert">Invert</option>
-                {% comment %} <option value="blur">Blur</option> {% endcomment %}
-            </select>
+        <div class="card mb-3">
+            <div class="card-body">
+                <label for="filter" class="form-label">Choose a filter:</label>
+                <select class="form-select mb-3" id="filter" name="filter">
+                    <option value="none" selected>None</option>
+                    <option value="grayscale">Grayscale</option>
+                    <option value="sepia">Sepia</option>
+                    <option value="invert">Invert</option>
+                    {% comment %} <option value="blur">Blur</option> {% endcomment %}
+                </select>
+            </div>
+        </div>
+        <div class="mb-3 row-cols-2 column-gap-3">
+            <button class="btn btn-outline-success col-3" type="submit" id="save-changes">Save Changes</button>
+            <a class="btn btn-dark col-2" href="{% url 'images' %}">Cancel</a>
         </div>
         {{ form }}
-        <button type="submit" id="save-changes" class="button">Save Changes</button>
     </form>
-    <a class="button" href="{% url 'images' %}">Cancel</a>
 {% endblock %}
 

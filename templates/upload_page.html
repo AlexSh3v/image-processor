@@ -6,17 +6,43 @@
 
 {% block body_tag %}
 
-    <!--  Logout using POST request!  -->
-    <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit">Logout.</button>
-    </form>
-
-    <h2>Upload your image below.</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
+        <div class="mb-3">
+            <div id="image-placeholder" style="width: 300px; height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; border: 1px solid #ccc;">
+                <span class="text-muted">No Image Selected</span>
+            </div>
+            <img id="imagePreview" src="#" alt="Image Preview" style="display: none; max-width: 300px; max-height: 300px;" />
+        </div>
+        <div class="mb-3">
+            <label for="id_source" class="form-label">Choose new image to upload.</label>
+            {{ form.source }}
+        </div>
+        <div class="d-grid gap-2 col-3">
+            <button id="my-submit-button" class="btn btn-primary" type="submit" disabled>Upload</button>
+        </div>
     </form>
+
+    <script>
+        // JavaScript to handle image preview
+        document.getElementById('id_source').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const imagePreview = document.getElementById('imagePreview');
+                const imagePlaceholder = document.getElementById('image-placeholder');
+                const uploadButton = document.getElementById('my-submit-button');
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                imagePlaceholder.style.display = 'none';
+                uploadButton.disabled = false;
+            };
+
+            if (file) {
+                reader.readAsDataURL(file); // Convert the file to a data URL
+            }
+        });
+    </script>
 
 {% endblock %}

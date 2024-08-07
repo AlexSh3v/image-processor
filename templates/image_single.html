@@ -6,40 +6,47 @@
 
 {% block body_tag %}
 
-{% comment %} 
-    <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit">Logout.</button>
-    </form>
-{% endcomment %}
-
-    <a href="{% url 'images' %}">Back to Image List</a>
-    <h1>Image Detail</h1>
-    <img id="image" src="{{ image.source.url }}" alt="{{ image.source.name }}" onclick="openFullscreen();" style="max-width: 100%; height: auto;">
-    <p>Uploaded at: {{ image.uploaded_at }}</p>
-    <p>Edited at: {{ image.edited_at }}</p>
-    <p>Uploader: {{ image.uploader.username }}</p>
-    <p>File format: {{ file_format }}</p>
-    <a class="button" href="{% url 'edit' image.pk %}">Edit</a>
-    <a class="button" href="{% url 'image-delete' image.pk %}">Delete</a>
-
-    <div class="image-display">
-        <div class="processed-images">
-            {% for sub_image in processed_images %}
-                <a href="{% url 'image-single' sub_image.pk %}">
-                    <img src="{{ sub_image.source.url }}" alt="Processed {{ sub_image.source.name }}" />
-                </a>
-            {% empty %}
-                <div class="my-placeholder">
-                    <p>No processed image. Edit it!</p>
-                </div>
-            {% endfor %}
-            {% if processed_list|length > 3 %}
-            <div class="more-indicator">
-                & more!
-            </div>
-        {% endif %}
+    {% comment %} <a href="{% url 'images' %}">Back to Image List</a> {% endcomment %}
+    <div class="mb-5 container">
+        <div class="mb-3 container text-center">
+            <img id="image" class="img-thumbnail rounded" style="width: 95%; max-width: 300px; max-height: 300px;" src="{{ image.source.url }}" alt="{{ image.source.name }}" onclick="openFullscreen();" style="max-width: 100%; height: auto;">
         </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Uploaded at</th>
+                    <th scope="col">Edited at</th>
+                    <th scope="col">Uploader</th>
+                    <th scope="col">File format</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">{{ image.uploaded_at }}</th>
+                    <td>{{ image.edited_at }}</td>
+                    <td>{{ image.uploader.username }}</td>
+                    <td>{{ file_format }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="mb-5 row row-cols-2 column-gap-1">
+            <a class="btn btn-outline-primary col-3" href="{% url 'edit' image.pk %}">Edit</a>
+            <a class="btn btn-outline-danger col-2" href="{% url 'image-delete' image.pk %}">Delete</a>
+        </div>
+    </div>
+
+    <div class="mb-5 container row-cols-4">
+        {% for sub_image in processed_images %}
+            <span class="containter col-auto">
+                <a href="{% url 'image-single' sub_image.pk %}">
+                    <img class="image-fluid" style="width: 20%; max-width: 300px; max-height: 300px;" src="{{ sub_image.source.url }}" alt="Processed {{ sub_image.source.name }}" />
+                </a>
+            </span>
+        {% empty %}
+            <div class="my-placeholder">
+                <p>No processed image. Edit it!</p>
+            </div>
+        {% endfor %}
     </div>   
 
     <script>

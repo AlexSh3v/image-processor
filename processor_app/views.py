@@ -30,6 +30,8 @@ class UploadPage(LoginRequiredMixin, View):
     def get(self, request: HttpRequest):
         form = UploadImageForm()
         context = {'form': form, }
+        for field in form.fields.values():
+            field.widget.attrs['class'] = 'form-control' 
         return render(request, 'upload_page.html', context)
 
     def post(self, request: HttpRequest):
