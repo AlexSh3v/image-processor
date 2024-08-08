@@ -11,11 +11,12 @@ from django.http import HttpRequest, Http404
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import View, UpdateView, DeleteView, ListView, DetailView
+from django.views.generic import View, CreateView, UpdateView, DeleteView, ListView, DetailView
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from image_processor.settings import MEDIA_ROOT
 from django.forms.models import model_to_dict
+from django.forms import ModelForm
 
 from processor_app.forms import UploadImageForm, EditImageForm, DeleteImageForm
 from processor_app.models import Images
@@ -27,25 +28,23 @@ class PreviewPage(View):
         return render(request, 'preview.html')
 
 
-class UploadPage(LoginRequiredMixin, View):
-    def get(self, request: HttpRequest):
-        form = UploadImageForm()
-        context = {'form': form, }
-        for field in form.fields.values():
-            field.widget.attrs['class'] = 'form-control' 
-        return render(request, 'upload_page.html', context)
+class UploadPage(LoginRequiredMixin, CreateView):
+    model = Images
+    fields = ['source']
+    template_name = 'upload_page.html'
 
-    def post(self, request: HttpRequest):
-        form = UploadImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            image = form.save(commit=False)
-            image.uploader = request.user
-            image.save()
-            print('saved!')
-            return redirect('images')
-        print('skip!')
-        print('errors:', form.errors)
-        return render(request, 'upload_page.html', {'form': form})
+    def form_valid(self, form):
+        form.instance.uploader = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        for field in context['form'].fields.values():
+            field.widget.attrs['class'] = 'form-control'
+        return context
+    
+    def get_success_url(self) -> str:
+        return reverse('image-single', kwargs={'pk': self.object.pk})
 
 
 class ImageEditView(LoginRequiredMixin, UpdateView):
