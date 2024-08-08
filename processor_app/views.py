@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models.query import QuerySet
 from django.http import HttpRequest, Http404
+from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import View, UpdateView, DeleteView, ListView, DetailView
@@ -106,7 +107,7 @@ class ImageEditView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('images')
+        return reverse('image-single', kwargs={'pk': self.object.pk})
 
 
 class ImageDeleteView(LoginRequiredMixin, DeleteView):
@@ -128,29 +129,33 @@ class ImageDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        print(f'CONTEXT!! {context}')
+        form: DeleteImageForm = context['form']
+        for field in form.fields.values():
+            field.widget.attrs['class'] = 'form-check-input ms-2' 
         return context
     
-
-    def post(self, request, *args, **kwargs):
-        print(f'POST!: {self.request.POST}')
-        delete_children_check = self.request.POST.get('is_delete_children')
+    def form_valid(self, form: DeleteImageForm):
+        print(f'[FORM VALID] cleaned: {form.cleaned_data!r}')
+        delete_children_check = form.cleaned_data.get('is_delete_children')
+        print(f'[FORM VALID] get check: {delete_children_check}')
         img_obj = self.get_object()
         original_relative_path = img_obj.source.path
         original_full_path = MEDIA_ROOT / original_relative_path
-        print(f'[delete] unlick origin: {original_full_path!r}')
+        print(f'[FORM VALID] unlick origin: {original_full_path!r}')
         original_full_path.unlink(missing_ok=True)
         queryset = Images.objects.filter(source=original_relative_path)
-        print(f'[delete] should be empty: {queryset}', sep='\n')
+        print(f'[FORM VALID] should be empty: {queryset}', sep='\n')
         for it in Images.objects.filter(original_id=img_obj.id):
             if not delete_children_check:
                 it.original_id = None
+                it.save()
+                print('[delete] skip cause parent!')
                 break
             processed_path = MEDIA_ROOT / it.source.path
-            print(f'  [delete] unlink: {processed_path!r}')
+            print(f'  [delete] delete this mf!: {processed_path!r}')
             processed_path.unlink(missing_ok=True)
             it.delete()
-        return super().post(request, *args, **kwargs)
+        return super().form_valid(form)
 
 
 def logout_view(request: HttpRequest):

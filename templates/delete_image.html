@@ -25,21 +25,21 @@
                 <p class="fs-3 mb-3">Are you sure the you want to <span style="color: red; font-weight: 900;">DELETE</span> this image?</p>
 
                 <div class="alert alert-danger dashed-border-danger" role="alert">
-                    <input class="form-check-input ms-2" type="checkbox" value="" id="id_is_delete_children">
-                    <label class="form-check-label ms-3" for="flexCheckDefault">
+                    {{ form.is_delete_children }}
+                    <label class="form-check-label ms-3" for="id_is_delete_children">
                         Also delete all processed images.
                     </label>
                 </div>
 
                 <div class="mb-3 row row-gap-1">
                     <div class="col-12">
-                        <a class="btn btn-outline-success w-100" href="{% url 'images' %}">No! I want to save it!</a>
+                        <a class="btn btn-outline-success w-100" href="{% url 'image-single' image.pk %}">No! I want to save it!</a>
                     </div>
                     <div class="col-12">
-                        <a class="btn btn-outline-success w-100" href="{% url 'images' %}">NOOO! Save it!</a>
+                        <a class="btn btn-outline-success w-100" href="{% url 'image-single' image.pk %}">NOOO! Save it!</a>
                     </div>
                     <div class="col-12">
-                        <a class="btn btn-outline-success w-100" href="{% url 'images' %}">NOOOOOOOOOOOO! SAAAAAVE IT!!1!</a>
+                        <a class="btn btn-outline-success w-100" href="{% url 'image-single' image.pk %}">NOOOOOOOOOOOO! SAAAAAVE IT!!1!</a>
                     </div>
                     <div class="col-12">
                         <input class="btn btn-outline-danger w-100" id="confirm-deletion" type="submit" value="CONFIRM DELETION OF THIS IMAGE!" />
