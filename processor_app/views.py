@@ -19,7 +19,7 @@ from django.forms.models import model_to_dict
 from django.forms import ModelForm
 
 from processor_app.forms import UploadImageForm, EditImageForm, DeleteImageForm
-from processor_app.models import Images
+from processor_app.models import Images, Albums
 
 from processor_app import proccesor
 
@@ -34,7 +34,14 @@ class UploadPage(LoginRequiredMixin, CreateView):
     template_name = 'upload_page.html'
 
     def form_valid(self, form):
-        form.instance.uploader = self.request.user
+        uploader = self.request.user
+        new_album = Albums(
+            name=f'Album {form.instance.source.name}',
+            uploader=uploader,
+        )
+        new_album.save()
+        form.instance.uploader = uploader
+        form.instance.album_id = new_album
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -94,8 +101,9 @@ class ImageEditView(LoginRequiredMixin, UpdateView):
 
         processed_image_obj = Images(
             source=processed_image_content,
-            original_id=img_obj.id,
+            # original_id=img_obj.id,
             uploader=self.request.user,
+            album_id=img_obj.album_id,
         )
         # FIXME: change type based on the image!
         processed_image_content.name = f'processed_{processed_image_obj.id}{suffix}'
@@ -113,8 +121,11 @@ class ImageDeleteView(LoginRequiredMixin, DeleteView):
     model = Images
     template_name = 'delete_image.html'
     form_class = DeleteImageForm
-    success_url = reverse_lazy('images')
+    success_url = reverse_lazy('albums')
     context_object_name = 'image'
+
+    def get_success_url(self) -> str:
+        return reverse('album-single', args=self.get_object())
 
     def get_queryset(self):
         return Images.objects.filter(uploader=self.request.user)
@@ -135,25 +146,11 @@ class ImageDeleteView(LoginRequiredMixin, DeleteView):
     
     def form_valid(self, form: DeleteImageForm):
         print(f'[FORM VALID] cleaned: {form.cleaned_data!r}')
-        delete_children_check = form.cleaned_data.get('is_delete_children')
-        print(f'[FORM VALID] get check: {delete_children_check}')
         img_obj = self.get_object()
         original_relative_path = img_obj.source.path
         original_full_path = MEDIA_ROOT / original_relative_path
         print(f'[FORM VALID] unlick origin: {original_full_path!r}')
         original_full_path.unlink(missing_ok=True)
-        queryset = Images.objects.filter(source=original_relative_path)
-        print(f'[FORM VALID] should be empty: {queryset}', sep='\n')
-        for it in Images.objects.filter(original_id=img_obj.id):
-            if not delete_children_check:
-                it.original_id = None
-                it.save()
-                print('[delete] skip cause parent!')
-                break
-            processed_path = MEDIA_ROOT / it.source.path
-            print(f'  [delete] delete this mf!: {processed_path!r}')
-            processed_path.unlink(missing_ok=True)
-            it.delete()
         return super().form_valid(form)
 
 
@@ -189,7 +186,7 @@ class ImagesList(LoginRequiredMixin, ListView):
 class BaseUrlRedirection(View):
     def get(self, request: HttpRequest, *_, **__):
         if request.user.is_authenticated:
-            return redirect('images')
+            return redirect('albums')
         return redirect('login')
         
 
@@ -200,16 +197,54 @@ class ImageSingle(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        this_obj = context['image']
-        file_format = pathlib.Path(this_obj.source.path).suffix
+        image = context['image']
+        uploader = self.request.user
+        file_format = pathlib.Path(image.source.path).suffix
         context['file_format'] = file_format.strip('.')
         context['processed_images'] = [
-            obj for obj in Images.objects.filter(original_id=context['image'].id)
-            if obj.id != this_obj.id
+            obj for obj in Images.objects.filter(uploader=uploader, album_id=image.album_id)
+            if obj.id != image.id
         ]
         print(f'[IMAGE SINGLE] this object:')
-        print(this_obj)
+        print(image)
         print(f'[IMAGE SINGLE] processed:')
         print(*context["processed_images"], sep='\n')
         return context
     
+
+class AlbumsView(LoginRequiredMixin, ListView):
+    model = Albums
+    template_name = 'albums.html'
+    context_object_name = 'albums'
+    
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        d = {}
+        for album in context[self.context_object_name]:
+            images = album.album_images.all() 
+            d[album] = {
+                'last_image': images[len(images)-1],
+                'album_size': len(images),
+            }
+        context['my_albums'] = d
+        print('[ALBUMS]', d)
+        return context
+    
+    def get_queryset(self) -> QuerySet:
+        return Albums.objects.filter(uploader=self.request.user)
+
+
+class SingleAlbumView(LoginRequiredMixin, DetailView):
+    model = Albums
+    template_name = 'album_single.html'
+    context_object_name = 'album'
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        album = context[self.context_object_name]
+        images = album.album_images.all()
+        context['images'] = images
+        print(f'[ALBUM-SINGLE] object:\n{album}')
+        print(f'[ALBUM-SINGLE] images:', *images, sep='\n--> ')
+        return context

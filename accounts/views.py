@@ -17,7 +17,7 @@ def custom_get_context_data(instance: View, **kwargs):
 class MyLoginView(LoginView):
     form_class = AuthenticationForm
     template_name = 'registration/login.html'
-    success_url = reverse_lazy('images')
+    success_url = reverse_lazy('albums')
 
     def get_context_data(self, **kwargs):
         return custom_get_context_data(self, **kwargs)

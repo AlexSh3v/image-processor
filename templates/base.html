@@ -19,14 +19,14 @@
     <nav class="navbar navbar-expand nav-dark bg-dark" data-bs-theme="dark">
         <div class="container">
             {% if user.is_authenticated %}
-                <a href="{% url 'images' %}" class="navbar-brand">Image Processor</a>
+                <a href="{% url 'albums' %}" class="navbar-brand">Image Processor</a>
             {% else %}
                 <a href="{% url 'preview' %}" class="navbar-brand">Image Processor</a>
             {% endif %}
             <ul class="navbar-nav">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="btn btn-dark" href="{% url 'images' %}" class="nav-link">Images</a>
+                        <a class="btn btn-dark" href="{% url 'albums' %}" class="nav-link">Albums</a>
                     </li>
                     <li class="nav-item">
                         <a class="btn btn-dark" href="{% url 'upload' %}" class="nav-link">Upload</a>

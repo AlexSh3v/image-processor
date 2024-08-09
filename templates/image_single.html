@@ -6,7 +6,7 @@
 
 {% block body_tag %}
 
-    {% comment %} <a href="{% url 'images' %}">Back to Image List</a> {% endcomment %}
+    {% comment %} <a href="{% url 'albums' %}">Back to Image List</a> {% endcomment %}
     <div class="mb-5 container">
         <div class="mb-3 container text-center">
             <img id="image" class="img-thumbnail rounded" style="width: 95%; max-width: 300px; max-height: 300px;" src="{{ image.source.url }}" alt="{{ image.source.name }}" onclick="openFullscreen();" style="max-width: 100%; height: auto;">

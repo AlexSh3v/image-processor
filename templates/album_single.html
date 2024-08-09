@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title_tag %}
+    Album - {{ album.name }}
+{% endblock %}
+
+{% block body_tag %}
+
+    <div class="mb-5 container p-0">
+        <div class="mb-3 container text-center">
+            {% comment %} TODO: album fancy makeup of images OR just letter with color {% endcomment %}
+            {% comment %} <img id="image" class="img-thumbnail rounded" style="width: 95%; max-width: 300px; max-height: 300px;" src="{{ album.source.url }}" alt="{{ album.source.name }}" onclick="openFullscreen();" style="max-width: 100%; height: auto;"> {% endcomment %}
+            {% comment %} <div class="placeholder" style="width: 300px; height: 300px; background-color: grey;"></div> {% endcomment %}
+        </div>
+        <p class="fs-2">{{ album.name }}</p>
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Created at</th>
+                    <th scope="col">Edited at</th>
+                    <th scope="col">Uploader</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th class="fw-normal">{{ album.created_at }}</th>
+                    <td>{{ album.edited_at }}</td>
+                    <td>{{ album.uploader.username }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="container mb-5 row row-cols-2 column-gap-1">
+            {% comment %} TODO: edit name, delete, download as zip {% endcomment %}
+            {% comment %} <a class="btn btn-outline-dark col-2" href="{{ image.source.url }}" download="{{ image.source.name }}">Download</a>
+            <a class="btn btn-outline-dark col-2" href="{% url 'edit' image.pk %}">Edit</a>
+            <a class="btn btn-outline-danger col-2" href="{% url 'image-delete' image.pk %}">Delete</a> {% endcomment %}
+        </div>
+    </div>
+
+    <div class="card mb-5">
+        <div class="card-body">
+            <div class="row row-cols-4 row-gap-3">
+                {% for image in images %}
+                    <div class="col-3">
+                        <a href="{% url 'image-single' image.pk %}">
+                            <img class="img-thumbnail hoverable-image" style="width: 100%; height: 100%; object-fit: cover;" src="{{ image.source.url }}" alt="Processed {{ image.source.name }}" />
+                        </a>
+                    </div>
+                {% empty %}
+
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+       
+
+    <script>
+        // Function to open the image in full screen
+        function openFullscreen() {
+            const img = document.getElementById("image");
+            if (img.requestFullscreen) {
+                img.requestFullscreen();
+            } else if (img.mozRequestFullScreen) { // Firefox
+                img.mozRequestFullScreen();
+            } else if (img.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+                img.webkitRequestFullscreen();
+            } else if (img.msRequestFullscreen) { // IE/Edge
+                img.msRequestFullscreen();
+            }
+        }
+    </script>
+
+{% endblock %}
+
