@@ -1,15 +1,15 @@
 .my-image-container {
-    width: 300px; 
-    height: 300px;
+    width: 175px; 
+    height: 175px;
 }
 .my-image {
-    width: 100%; 
+    object-fit: cover;
 }
 .my-card-link {
     display: block;
     position: absolute;
     width: 100%;
-    height: 100%;
+    height: auto;
     transition: 250ms border ease-out;
 }
 .my-card-link:hover {

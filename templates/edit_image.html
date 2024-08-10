@@ -42,7 +42,7 @@
         </div>
         <div class="mb-3 row-cols-2 column-gap-3">
             <button class="btn btn-outline-success col-3" type="submit" id="save-changes">Save Changes</button>
-            <a class="btn btn-dark col-2" href="{% url 'albums' %}">Cancel</a>
+            <a class="btn btn-dark col-2" href="{% url 'album-single' object.album_id.pk %}">Cancel</a>
         </div>
         {{ form }}
     </form>

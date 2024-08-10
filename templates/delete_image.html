@@ -17,19 +17,23 @@
     <form method="POST">
         {% csrf_token %}
         {% comment %} <img src="{{ image.source.url }}" alt="{{ image.source.name }}" style="width: 24%; height: auto;"/> {% endcomment %}
-        <div class="mb-3 container text-center">
-            <img id="image" class="my-image img-thumbnail rounded" src="{{ image.source.url }}" alt="{{ image.source.name }}" onclick="openFullscreen();" >
+        <div class="card mb-3">
+            {% comment %} <a class="my-card-link" style="width:100%; height: 100%; position: absolute;" href="{% url 'image-single' image.pk %}"></a> {% endcomment %}
+            <div class="card-body p-0">
+                <div class="row align-items-center">
+                    <div class="col-3">
+                        <a href="{% url 'image-single' image.pk %}">
+                            <img class="my-image img-thumbnail" src="{{ image.source.url }}" alt="{{ image.source.name }}"  />
+                        </a>
+                    </div>
+                    <p class="col-8 card-title fs-4">{{ image.name }}</p>
+                    {% comment %} <p class="col-1 fs-4">{{ album_info.album_size }}</p> {% endcomment %}
+                </div>
+            </div>
         </div>
         <div class="card mb-5">
             <div class="card-body">
                 <p class="fs-3 mb-3">Are you sure the you want to <span style="color: red; font-weight: 900;">DELETE</span> this image?</p>
-
-                <div class="alert alert-danger dashed-border-danger" role="alert">
-                    {{ form.is_delete_children }}
-                    <label class="form-check-label ms-3" for="id_is_delete_children">
-                        Also delete all processed images.
-                    </label>
-                </div>
 
                 <div class="mb-3 row row-gap-1">
                     <div class="col-12">

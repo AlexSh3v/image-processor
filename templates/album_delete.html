@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title_tag %}
+    Delete Album
+{% endblock %}
+
+{% block head_tag %}
+    <link href="{% static 'css/images_styles.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body_tag %}
+    <form method="POST">
+        {% csrf_token %}
+        <div class="card mb-5 bg-danger-subtle">
+            <div class="card-body">
+
+                <p class="fs-3 mb-0">Are you sure the you want to <span style="color: red; font-weight: 900;">DELETE</span> this album?</p>
+                <p class="fs-5 text-danger mb-5">This action CANNOT be undone!</p>
+
+                <p class="card-title fs-4">{{ album.name }}</p>
+                <table class="table table-striped table-hover table-danger mb-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">Created at</th>
+                            <th scope="col">Edited at</th>
+                            <th scope="col">Uploader</th>
+                            <th scope="col"># of Images</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th class="fw-normal">{{ album.created_at }}</th>
+                            <td>{{ album.edited_at }}</td>
+                            <td>{{ album.uploader.username }}</td>
+                            <td>{{ album_size }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="mb-5">
+                    <p class="fs-3">Images that will <span style="color: red; font-weight: 900;">GONE</span>:</p>
+                    <div class="row row-cols-4 row-gap-3">
+                        {% for image in images %}
+                            <div class="col-3 my-image-container">
+                                <a href="{% url 'image-single' image.pk %}">
+                                    <img class="img-thumbnail hoverable-image" style="width: 100%; height: 100%; object-fit: cover;" src="{{ image.source.url }}" alt="Processed {{ image.source.name }}" />
+                                </a>
+                            </div>
+                        {% empty %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-2 row row-gap-1">
+                    <div class="col-12">
+                        <a class="btn btn-outline-success w-100" href="{% url 'album-single' album.pk %}">No! I want to save it!</a>
+                    </div>
+                    <div class="col-12">
+                        <a class="btn btn-outline-success w-100" href="{% url 'album-single' album.pk %}">NOOO! Save it!</a>
+                    </div>
+                    <div class="col-12">
+                        <a class="btn btn-outline-success w-100" href="{% url 'album-single' album.pk %}">NOOOOOOOOOOOO! SAAAAAVE IT!!1!</a>
+                    </div>
+                    <div class="col-12">
+                        <input class="btn btn-outline-danger w-100" id="confirm-deletion" type="submit" value="CONFIRM DELETION OF THIS ALBUM!" />
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
+

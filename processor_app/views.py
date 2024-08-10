@@ -1,3 +1,4 @@
+import datetime
 import pathlib
 from typing import Any
 import uuid
@@ -18,7 +19,7 @@ from image_processor.settings import MEDIA_ROOT
 from django.forms.models import model_to_dict
 from django.forms import ModelForm
 
-from processor_app.forms import UploadImageForm, EditImageForm, DeleteImageForm
+from processor_app.forms import UploadImageForm, EditImageForm, DeleteImageForm, AlbumEditForm, AlbumDeleteForm
 from processor_app.models import Images, Albums
 
 from processor_app import proccesor
@@ -111,21 +112,23 @@ class ImageEditView(LoginRequiredMixin, UpdateView):
         processed_image_obj.save()
 
         # messages.success(self.request, 'Image updated successfully!')
+        album = img_obj.album_id
+        album.edited_at = datetime.datetime.now()
+        album.save()
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('image-single', kwargs={'pk': self.object.pk})
+        return reverse('image-single', kwargs={'pk': self.get_object().pk})
 
 
 class ImageDeleteView(LoginRequiredMixin, DeleteView):
     model = Images
     template_name = 'delete_image.html'
     form_class = DeleteImageForm
-    success_url = reverse_lazy('albums')
     context_object_name = 'image'
 
     def get_success_url(self) -> str:
-        return reverse('album-single', args=self.get_object())
+        return reverse('album-single', args=(self.get_object().album_id.pk,))
 
     def get_queryset(self):
         return Images.objects.filter(uploader=self.request.user)
@@ -222,7 +225,7 @@ class AlbumsView(LoginRequiredMixin, ListView):
 
         d = {}
         for album in context[self.context_object_name]:
-            images = album.album_images.all() 
+            images = album.album_images.all()
             d[album] = {
                 'last_image': images[len(images)-1],
                 'album_size': len(images),
@@ -232,7 +235,40 @@ class AlbumsView(LoginRequiredMixin, ListView):
         return context
     
     def get_queryset(self) -> QuerySet:
+        return Albums.objects.filter(uploader=self.request.user).order_by('-edited_at')
+
+
+class AlbumEditView(LoginRequiredMixin, UpdateView):
+    model = Albums
+    form_class = AlbumEditForm
+    template_name = 'album_edit.html'
+    context_object_name = 'album'
+    
+    def get_queryset(self):
         return Albums.objects.filter(uploader=self.request.user)
+
+    def get_object(self, _=None):
+        query = self.get_queryset()
+        pk = self.kwargs['pk']
+        obj = query.get(pk=uuid.UUID(pk))
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        fields = context['form'].fields
+        name_input_field_widget = fields['name'].widget
+        name_input_field_widget.attrs['placeholder'] = self.get_object().name
+        name_input_field_widget.attrs['class'] = 'form-control'
+        return context
+
+    def form_valid(self, form):
+        album = self.get_object()
+        album.edited_at = datetime.datetime.now()
+        album.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('album-single', args=(self.get_object().pk,))
 
 
 class SingleAlbumView(LoginRequiredMixin, DetailView):
@@ -248,3 +284,40 @@ class SingleAlbumView(LoginRequiredMixin, DetailView):
         print(f'[ALBUM-SINGLE] object:\n{album}')
         print(f'[ALBUM-SINGLE] images:', *images, sep='\n--> ')
         return context
+
+
+class AlbumDeleteView(LoginRequiredMixin, DeleteView):
+    model = Albums
+    template_name = 'album_delete.html'
+    form_class = AlbumDeleteForm
+    context_object_name = 'album'
+
+    def get_success_url(self) -> str:
+        return reverse('albums')
+
+    def get_object(self, _=None):
+        query = Albums.objects.filter(uploader=self.request.user)
+        pk = uuid.UUID(self.kwargs['pk'])
+        album_to_delete = query.get(pk=pk)
+        return album_to_delete
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        form: AlbumDeleteForm = context['form']
+        album_to_delete = self.get_object()
+        context['images'] = album_to_delete.album_images.all()
+        context['album_size'] = len(context['images'])
+        for field in form.fields.values():
+            field.widget.attrs['class'] = 'form-check-input ms-2' 
+        return context
+
+    def form_valid(self, form: AlbumDeleteForm):
+        album_to_delete = self.get_object()
+        count = 0
+        for image in album_to_delete.album_images.all():
+            path = pathlib.Path(image.source.path)
+            path.unlink(missing_ok=True)
+            count += 1
+        print(f'[ALBUM_DELETE] Deleted {count} images from album {album_to_delete.name!r}')
+        return super().form_valid(form)
+    

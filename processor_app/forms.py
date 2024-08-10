@@ -1,5 +1,5 @@
 from django import forms
-from .models import Images
+from .models import Images, Albums
 
 
 class UploadImageForm(forms.ModelForm):
@@ -17,6 +17,17 @@ class EditImageForm(forms.ModelForm):
     crop_y = forms.IntegerField(widget=forms.HiddenInput(), required=False)
     crop_width = forms.IntegerField(widget=forms.HiddenInput(), required=False)
     crop_height = forms.IntegerField(widget=forms.HiddenInput(), required=False)
+
+
+class AlbumEditForm(forms.ModelForm):
+    class Meta:
+        model = Albums
+        fields = ['name']
+
+class AlbumDeleteForm(forms.ModelForm):
+    class Meta:
+        model = Albums
+        fields = []
 
 
 class DeleteImageForm(forms.ModelForm):

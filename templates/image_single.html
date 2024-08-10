@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title_tag %}
     Image - {{ image.source.name }}
+{% endblock %}
+
+{% block head_tag %}
+    <link href="{% static 'css/images_styles.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block body_tag %}
@@ -30,25 +35,29 @@
             </tbody>
         </table>
         <div class="container mb-5 row row-cols-2 column-gap-1">
+            <a class="btn btn-outline-dark col-2" href="{% url 'album-single' image.album_id.pk %}">Album</a>
             <a class="btn btn-outline-dark col-2" href="{{ image.source.url }}" download="{{ image.source.name }}">Download</a>
             <a class="btn btn-outline-dark col-2" href="{% url 'edit' image.pk %}">Edit</a>
             <a class="btn btn-outline-danger col-2" href="{% url 'image-delete' image.pk %}">Delete</a>
         </div>
     </div>
 
-    <div class="mb-5 container row-cols-4">
-        {% for sub_image in processed_images %}
-            <span class="containter col-auto">
-                <a href="{% url 'image-single' sub_image.pk %}">
-                    <img class="image-fluid" style="width: 20%; max-width: 300px; max-height: 300px;" src="{{ sub_image.source.url }}" alt="Processed {{ sub_image.source.name }}" />
-                </a>
-            </span>
-        {% empty %}
-            <div class="my-placeholder">
-                {% comment %} <p>No processed image. Edit it!</p> {% endcomment %}
+    {% if processed_images|length > 0%}
+    <div class="card mb-5">
+        <div class="card-body">
+            <div class="row row-cols-4 row-gap-3">
+                {% for image in processed_images %}
+                    <div class="col-3">
+                        <a href="{% url 'image-single' image.pk %}">
+                            <img class="img-thumbnail hoverable-image" style="width: 100%; height: 100%; object-fit: cover;" src="{{ image.source.url }}" alt="Processed {{ image.source.name }}" />
+                        </a>
+                    </div>
+                {% empty %}
+                {% endfor %}
             </div>
-        {% endfor %}
-    </div>   
+        </div>
+    </div>
+    {% endif %}
 
     <script>
         // Function to open the image in full screen

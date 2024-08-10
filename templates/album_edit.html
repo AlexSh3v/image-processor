@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title_tag %}
+    Edit Album
+{% endblock %}
+
+{% block head_tag %}
+    <link href="{% static 'css/images_styles.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body_tag %}
+    <h1 class="mb-3">Edit</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+            {% comment %} <span class="input-group-text">Album Name</span> {% endcomment %}
+            <span class="input-group-text">New Name</span>
+            {{ form.name }}
+        </div>
+        <div class="container mb-3 row row-cols-2 column-gap-2">
+            <button class="btn btn-outline-success col-3" type="submit">Update Name</button>
+            <a class="btn btn-outline-dark col-2" href="{% url 'album-single' album.pk %}">Cancel</a>
+        </div>
+    </form>
+{% endblock %}
+
