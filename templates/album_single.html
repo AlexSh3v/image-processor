@@ -44,7 +44,7 @@
                 {% for image in images %}
                     <div class="col-3 my-image-container">
                         <a href="{% url 'image-single' image.pk %}">
-                            <img class="img-thumbnail h-auto w-100 my-image hoverable-image" src="{{ image.source.url }}" alt="Processed {{ image.source.name }}" />
+                            <img class="img-thumbnail my-image hoverable-image" src="{{ image.source.url }}" alt="Processed {{ image.source.name }}" />
                         </a>
                     </div>
                 {% empty %}

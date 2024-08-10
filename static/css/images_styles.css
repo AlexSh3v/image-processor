@@ -3,13 +3,15 @@
     height: 175px;
 }
 .my-image {
-    object-fit: cover;
+    width: 100px;
+    height: 100px;
+    object-fit: scale-down;
 }
 .my-card-link {
     display: block;
     position: absolute;
     width: 100%;
-    height: auto;
+    height: 100%;
     transition: 250ms border ease-out;
 }
 .my-card-link:hover {

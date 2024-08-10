@@ -27,7 +27,11 @@
                         </div>
                     </div>
                 </div>
-                
+            {% empty %}
+                <div class="d-grid">
+                    <div class="fs-3">You have ZERO albums. Upload new image?</div>
+                    <a class="mt-2 btn btn-primary" href="{% url 'upload' %}">YES!</a>
+                </div>
             {% endfor %}
         </div>
     </div>
