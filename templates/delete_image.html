@@ -10,27 +10,48 @@
 {% endblock %}
 
 {% block body_tag %}
-    <h1>Delete Image</h1>
     {% comment %} <form action="{% url 'delete' image.pk %}" method="post" style="display:inline;">
         {% csrf_token %}
         <button type="submit" class="button">Delete</button>
     </form>  {% endcomment %}
     <form method="POST">
         {% csrf_token %}
-        <img src="{{ image.source.url }}" alt="{{ image.source.name }}" style="width: 24%; height: auto;"/>
-        <p>
-            Are you sure you want to delete "{{ image.source.name }}"? 
-            <span style="color: red;">
-                THIS IS TOTALY A DESTRUCTIVE ACTION!
-            </span>
-        </p>
-        {% comment %} <label>
-            <input type="checkbox" id="id_delete_children" />
-            Delete children also.
-        </label> {% endcomment %}
-        {% comment %} <br> {% endcomment %}
-        {{ form }}
-        <input type="submit" value="Confirm" />
+        {% comment %} <img src="{{ image.source.url }}" alt="{{ image.source.name }}" style="width: 24%; height: auto;"/> {% endcomment %}
+        <div class="card mb-3">
+            {% comment %} <a class="my-card-link" style="width:100%; height: 100%; position: absolute;" href="{% url 'image-single' image.pk %}"></a> {% endcomment %}
+            <div class="card-body p-0">
+                <div class="row align-items-center">
+                    <div class="col-3">
+                        <a href="{% url 'image-single' image.pk %}">
+                            <img class="my-image img-thumbnail" src="{{ image.source.url }}" alt="{{ image.source.name }}"  />
+                        </a>
+                    </div>
+                    <p class="col-8 card-title fs-4">{{ image.name }}</p>
+                    {% comment %} <p class="col-1 fs-4">{{ album_info.album_size }}</p> {% endcomment %}
+                </div>
+            </div>
+        </div>
+        <div class="card mb-5">
+            <div class="card-body">
+                <p class="fs-3 mb-3">Are you sure the you want to <span style="color: red; font-weight: 900;">DELETE</span> this image?</p>
+
+                <div class="mb-3 row row-gap-1">
+                    <div class="col-12">
+                        <a class="btn btn-outline-success w-100" href="{% url 'image-single' image.pk %}">No! I want to save it!</a>
+                    </div>
+                    <div class="col-12">
+                        <a class="btn btn-outline-success w-100" href="{% url 'image-single' image.pk %}">NOOO! Save it!</a>
+                    </div>
+                    <div class="col-12">
+                        <a class="btn btn-outline-success w-100" href="{% url 'image-single' image.pk %}">NOOOOOOOOOOOO! SAAAAAVE IT!!1!</a>
+                    </div>
+                    <div class="col-12">
+                        <input class="btn btn-outline-danger w-100" id="confirm-deletion" type="submit" value="CONFIRM DELETION OF THIS IMAGE!" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </form>
 {% endblock %}
 

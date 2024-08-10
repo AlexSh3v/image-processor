@@ -8,7 +8,25 @@
     <h1>Sign Up for FREE!</h1>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">YES, create my account!</button>
+        {% if has_error %}
+            {% for key, error_msg in form.errors.items %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error_msg }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="mb-3">
+            <label for="id_username" class="form-label">Login</label>
+            {{ form.username }}
+        </div>
+        <div class="mb-3">
+            <label for="id_password1" class="form-label">Password</label>
+            {{ form.password1 }}
+        </div>
+        <div class="mb-3">
+            <label for="id_password2" class="form-label">Repeat Password</label>
+            {{ form.password2 }}
+        </div>
+        <button type="submit" class="btn btn-primary">Create account</button>
     </form>
 {% endblock %}

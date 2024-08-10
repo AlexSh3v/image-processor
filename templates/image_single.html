@@ -1,26 +1,63 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title_tag %}
     Image - {{ image.source.name }}
 {% endblock %}
 
+{% block head_tag %}
+    <link href="{% static 'css/images_styles.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block body_tag %}
 
-{% comment %} 
-    <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit">Logout.</button>
-    </form>
-{% endcomment %}
+    {% comment %} <a href="{% url 'albums' %}">Back to Image List</a> {% endcomment %}
+    <div class="mb-5 container">
+        <div class="mb-3 container text-center">
+            <img id="image" class="img-thumbnail rounded" style="width: 100%; max-width: 300px; max-height: 300px; object-fit: scale-down;" src="{{ image.source.url }}" alt="{{ image.source.name }}" onclick="openFullscreen();" style="max-width: 100%; height: auto;">
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Uploaded at</th>
+                    <th scope="col">Edited at</th>
+                    <th scope="col">Uploader</th>
+                    <th scope="col">File format</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">{{ image.uploaded_at }}</th>
+                    <td>{{ image.edited_at }}</td>
+                    <td>{{ image.uploader.username }}</td>
+                    <td>{{ file_format }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="container mb-5 row row-cols-2 column-gap-1">
+            <a class="btn btn-outline-dark col-2" href="{% url 'album-single' image.album_id.pk %}">Album</a>
+            <a class="btn btn-outline-dark col-2" href="{{ image.source.url }}" download="{{ image.source.name }}">Download</a>
+            <a class="btn btn-outline-dark col-2" href="{% url 'edit' image.pk %}">Edit</a>
+            <a class="btn btn-outline-danger col-2" href="{% url 'image-delete' image.pk %}">Delete</a>
+        </div>
+    </div>
 
-    <a href="{% url 'images' %}">Back to Image List</a>
-    <h1>Image Detail</h1>
-    <img id="image" src="{{ image.source.url }}" alt="{{ image.source.name }}" onclick="openFullscreen();" style="max-width: 100%; height: auto;">
-    <p>Uploaded at: {{ image.uploaded_at }}</p>
-    <p>Edited at: {{ image.edited_at }}</p>
-    <p>Uploader: {{ image.uploader.username }}</p>
-    <a class="button" href="{% url 'edit' image.pk %}">Edit</a>
-    <a class="button" href="{% url 'image-delete' image.pk %}">Delete</a>
+    {% if processed_images|length > 0%}
+    <div class="card mb-5">
+        <div class="card-body">
+            <div class="row row-cols-4 row-gap-3">
+                {% for image in processed_images %}
+                    <div class="col-3">
+                        <a href="{% url 'image-single' image.pk %}">
+                            <img class="img-thumbnail hoverable-image" style="width: 100%; height: 100%; object-fit: cover;" src="{{ image.source.url }}" alt="Processed {{ image.source.name }}" />
+                        </a>
+                    </div>
+                {% empty %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <script>
         // Function to open the image in full screen

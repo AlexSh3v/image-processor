@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title_tag %}
+    My Arts
+{% endblock %}
+
+{% block head_tag %}
+    <link href="{% static 'css/images_styles.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block body_tag %}
+    <div class="container">
+        <div class="gallery">
+            {% for album, album_info in my_albums.items %}
+                <div class="card mb-3">
+                    <a class="my-card-link" href="{% url 'album-single' album.pk %}"></a>
+                    <div class="card-body p-0">
+                        <div class="row align-items-center">
+                            <div class="col-3">
+                                <a href="{% url 'album-single' album.pk %}">
+                                    <img class="my-image img-thumbnail" src="{{ album_info.last_image.source.url }}" alt="{{ album_info.last_image.source.name }}"  />
+                                </a>
+                            </div>
+                            <p class="col-8 card-title fs-4">{{ album.name }}</p>
+                            <p class="col-1 fs-4">{{ album_info.album_size }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="d-grid">
+                    <div class="fs-3">You have ZERO albums. Upload new image?</div>
+                    <a class="mt-2 btn btn-primary" href="{% url 'upload' %}">YES!</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
