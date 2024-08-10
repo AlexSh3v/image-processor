@@ -1,10 +1,93 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title_tag %}
-    Welcome!
+    Image Processor
+{% endblock %}
+
+{% block head_tag %}
+    <style>
+        .fade-in-1 {
+            opacity: 0;
+            animation: fadeIn 1000ms forwards;
+        }
+
+        .fade-in-2 {
+            opacity: 0;
+            animation: fadeIn 1000ms forwards 500ms;
+        }
+
+        .fade-in-3 {
+            opacity: 0;
+            animation: fadeIn 1000ms forwards 1200ms;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .from-shadow {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: fromShadow 1000ms forwards 1000ms;
+        }
+        @keyframes fromShadow {
+            to {
+                box-shadow: none;
+            }
+        }
+
+        .card {
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 {% endblock %}
 
 {% block body_tag %}
-    <h1>Welcome to Image Processor!</h1>
-    <a class="button" href="{% url 'login' %}">GET STARTED NOW!</a>
+    <div class="container mt-5 text-center fade-in-1">
+        <h1 class="display-4">Welcome to Image Processor!</h1>
+        <p class="lead">Transform and enhance your images with our powerful tools.</p>
+    </div>
+
+    <div class="container mt-5 fade-in-2">
+        <div class="row">
+            <div class="col-md-4 d-flex">
+                <div class="card flex-fill">
+                    <div class="card-body from-shadow">
+                        <h5 class="card-title">Easy to Use</h5>
+                        <p class="card-text">Our user-friendly interface makes image processing a breeze.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex">
+                <div class="card flex-fill">
+                    <div class="card-body from-shadow">
+                        <h5 class="card-title">Fast Processing</h5>
+                        <p class="card-text">Experience quick and efficient image processing.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex">
+                <div class="card flex-fill">
+                    <div class="card-body from-shadow">
+                        <h5 class="card-title">High Quality</h5>
+                        <p class="card-text">Ensure your images maintain their quality after processing.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 container d-flex justify-content-center fade-in-3">
+        <a class="btn btn-primary btn-lg w-100" href="{% url 'base-redirection' %}" role="button">Get Started Now!</a>
+    </div>
+
+    <footer class="mt-5 fade-in-3 container">
+        <p>&copy; 2024 Image Processor. All rights reserved.</p>
+    </footer>
 {% endblock %}
